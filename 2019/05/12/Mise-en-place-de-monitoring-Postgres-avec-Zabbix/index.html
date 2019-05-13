@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Log d&#39;un sysAdmin">
 <meta property="og:description" content="Petit article pour décrire comment j’ai ajouté des sondes de monitoring dans zabbix pour collecter des informations concernant une instance postgresql. Ou plus sobrement comment j’ai configuré le modu">
 <meta property="og:locale" content="fr">
-<meta property="og:updated_time" content="2019-05-13T19:52:33.772Z">
+<meta property="og:updated_time" content="2019-05-13T20:00:32.158Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mise en place de monitoring Postgres avec Zabbix">
 <meta name="twitter:description" content="Petit article pour décrire comment j’ai ajouté des sondes de monitoring dans zabbix pour collecter des informations concernant une instance postgresql. Ou plus sobrement comment j’ai configuré le modu">
@@ -104,7 +104,7 @@
 <p>Le premier élément de la ligne permet de nommer notre “mappage” (nom utilisé dans le fichier pg_hba.conf), le deuxième le nom de l’utilisateur système et le dernier le nom du rôle postgres. <strong>On fait simplement correspondre l’utilisateur zabbix au rôle postgres monitoring que nous venons de créer</strong>.</p>
 <p><strong>Pour activer nos modifications (pg_hba.conf et pg_ident.conf) un reload (SIGHUP) du service postgresql est requis</strong>. </p>
 <h2 id="Et-hop-on-peut-tester"><a href="#Et-hop-on-peut-tester" class="headerlink" title="Et hop on peut tester"></a>Et hop on peut tester</h2><p>Maintenant que nous avons configuré notre agent zabbix et notre serveur postgres nous pouvons tester. Un moyen simple est d’utiliser zabbix_get depuis notre serveur zabbix :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zabbix_get -s 192.168.201.18 10050 -k &quot;pg.backends.count[user=monitoring,postgres]&quot;</span><br></pre></td></tr></table></figure></p>
-<p>La commande zabbix_get (si on a pas loupé une étape) doit afficher sur stdout le nombre de backend actuellement connecté à notre serveur Postgres :-). On peut maintenant importer le template via l’interface de zabbix et l’appliquer à notre hôte - serveur postgres. Si la config est valide, après quelques minutes + tard nous avons des jolies données (et surtout des graphiques) en + dans notre Zabbix.</p>
+<p>La commande zabbix_get (si on a pas loupé une étape) doit afficher sur stdout le nombre de backend actuellement connecté à notre serveur Postgres :-). On peut maintenant importer le template via l’interface de zabbix et l’appliquer à notre hôte - serveur postgres. Si la config est valide, après quelques minutes nous obtenons des jolies données (et surtout des graphiques) en + dans notre Zabbix.</p>
 <h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>Le module permet de collecter un grand nombre d’info et de génerer des graphes pertinents, il est juste de base agressif au niveau des connections qu’il fait vers notre serveur (On peut le voir dans les logs). <a href="La doc indique qu&#39;il peut être souhaitable d&#39;utiliser un pool de connection pour limiter les connections utilisées par le monitoring">http://cavaliercoder.com/libzbxpgsql/documentation/connection-pooling/</a>. Une évolution possible (et pourquoi pas un prochain article ;-)) est comme indiqué dans la doc (qui est au passage bien écrite) donc de mettre PgBouncer ou PgPool en place pour le monitoring de nos serveurs. </p>
 
       
