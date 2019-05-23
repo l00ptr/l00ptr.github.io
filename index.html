@@ -62,6 +62,55 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Tester-du-code-ansible-avec-Molecule" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/05/24/Tester-du-code-ansible-avec-Molecule/" class="article-date">
+  <time datetime="2019-05-24T21:09:30.000Z" itemprop="datePublished">2019-05-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/05/24/Tester-du-code-ansible-avec-Molecule/">Tester du code ansible avec Molecule</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Molecule n’est pas à proprement parlé un framework de test, c’est un outil pour orchester et organiser des scénari de test(s). Il a été conçu pour faciliter l’écriture de test et améliorer la qualité des rôles ansible. Il utilise (par défaut) les briques suivantes :</p>
+<ul>
+<li><a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a> pour construire rapidement des plateformes (distrib GNU+Linux) pour lancer nos tests</li>
+<li><a href="htts://www.ansible.com" target="_blank" rel="noopener">Ansible</a> pour orchestrer la création d’un ou plusieurs hosts pour éxecuter nos tests</li>
+<li><a href="https://testinfra.readthedocs.io/en/latest/" target="_blank" rel="noopener">Testinfra</a> pour tester les composants d’infra que nous configurons avec notre/nos rôles (par exemple vérifier que le port 80 écoute bien après avoir installé, activé et lancé httpd via un rôle ansible)</li>
+</ul>
+<p>L’objectif de notre article est de prendre en main molecule et de voir comment lancer des tests (via testinfra). En + de l’article, <a href="https://github.com/l00ptr/molecue_demo" target="_blank" rel="noopener">vous pouvez trouver un repo git qui reprend l’exemple que nous élaborons ici</a>.<br>
+        
+          </p><p class="article-more-link">
+            <a href="/2019/05/24/Tester-du-code-ansible-avec-Molecule/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://l00ptr.github.io/2019/05/24/Tester-du-code-ansible-avec-Molecule/" data-id="cjvvdg7xg000041pvekox92yw" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ansible/">Ansible</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/automatisation/">automatisation</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/molecule/">molecule</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sysAdmin/">sysAdmin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/testinfra/">testinfra</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Mise-en-place-de-monitoring-Postgres-avec-Zabbix" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/05/12/Mise-en-place-de-monitoring-Postgres-avec-Zabbix/" class="article-date">
@@ -107,8 +156,8 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://l00ptr.github.io/2019/05/12/Mise-en-place-de-monitoring-Postgres-avec-Zabbix/" data-id="cjvpqzmcw00017tpv3vi5x1p8" class="article-share-link">Partager</a>
-      
+      <a data-url="http://l00ptr.github.io/2019/05/12/Mise-en-place-de-monitoring-Postgres-avec-Zabbix/" data-id="cjvvdg7xt000541pvztmwjsv0" class="article-share-link">Partager</a>
+
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Monitoring/">Monitoring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Zabbix/">Zabbix</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sysAdmin/">sysAdmin</a></li></ul>
 
@@ -181,8 +230,8 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://l00ptr.github.io/2019/05/09/Comment-je-fais-de-la-veille-en-2019/" data-id="cjvpqzmcy00027tpvxmvuigbm" class="article-share-link">Partager</a>
-      
+      <a data-url="http://l00ptr.github.io/2019/05/09/Comment-je-fais-de-la-veille-en-2019/" data-id="cjvvdg7xo000241pv490qggcl" class="article-share-link">Partager</a>
+
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Veille-tech/">Veille tech</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/formation/">formation</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sysAdmin/">sysAdmin</a></li></ul>
 
@@ -206,7 +255,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Monitoring/">Monitoring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Veille-tech/">Veille tech</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Zabbix/">Zabbix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/formation/">formation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sysAdmin/">sysAdmin</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ansible/">Ansible</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Monitoring/">Monitoring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Veille-tech/">Veille tech</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Zabbix/">Zabbix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/automatisation/">automatisation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/formation/">formation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/molecule/">molecule</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sysAdmin/">sysAdmin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/testinfra/">testinfra</a></li></ul>
     </div>
   </div>
 
@@ -216,7 +265,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Monitoring/" style="font-size: 10px;">Monitoring</a> <a href="/tags/PostgreSQL/" style="font-size: 10px;">PostgreSQL</a> <a href="/tags/Veille-tech/" style="font-size: 10px;">Veille tech</a> <a href="/tags/Zabbix/" style="font-size: 10px;">Zabbix</a> <a href="/tags/formation/" style="font-size: 10px;">formation</a> <a href="/tags/sysAdmin/" style="font-size: 20px;">sysAdmin</a>
+      <a href="/tags/Ansible/" style="font-size: 10px;">Ansible</a> <a href="/tags/Monitoring/" style="font-size: 10px;">Monitoring</a> <a href="/tags/PostgreSQL/" style="font-size: 10px;">PostgreSQL</a> <a href="/tags/Veille-tech/" style="font-size: 10px;">Veille tech</a> <a href="/tags/Zabbix/" style="font-size: 10px;">Zabbix</a> <a href="/tags/automatisation/" style="font-size: 10px;">automatisation</a> <a href="/tags/formation/" style="font-size: 10px;">formation</a> <a href="/tags/molecule/" style="font-size: 10px;">molecule</a> <a href="/tags/sysAdmin/" style="font-size: 20px;">sysAdmin</a> <a href="/tags/testinfra/" style="font-size: 10px;">testinfra</a>
     </div>
   </div>
 
@@ -236,6 +285,10 @@
     <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/05/24/Tester-du-code-ansible-avec-Molecule/">Tester du code ansible avec Molecule</a>
+          </li>
         
           <li>
             <a href="/2019/05/12/Mise-en-place-de-monitoring-Postgres-avec-Zabbix/">Mise en place de monitoring Postgres avec Zabbix</a>

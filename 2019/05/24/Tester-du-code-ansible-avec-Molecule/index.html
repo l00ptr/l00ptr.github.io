@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Tester du code ansible avec Molecule | Log d&#39;un sysAdmin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Molecule n’est pas à proprement parlé un framework de test, c’est un outil pour orchester et organiser des scénari de test(s). Il a été conçu pour faciliter l’écriture de test et améliorer la qualité">
+<meta name="keywords" content="sysAdmin,automatisation,Ansible,molecule,testinfra">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tester du code ansible avec Molecule">
+<meta property="og:url" content="http://l00ptr.github.io/2019/05/24/Tester-du-code-ansible-avec-Molecule/index.html">
+<meta property="og:site_name" content="Log d&#39;un sysAdmin">
+<meta property="og:description" content="Molecule n’est pas à proprement parlé un framework de test, c’est un outil pour orchester et organiser des scénari de test(s). Il a été conçu pour faciliter l’écriture de test et améliorer la qualité">
+<meta property="og:locale" content="fr">
+<meta property="og:updated_time" content="2019-05-23T22:12:47.543Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tester du code ansible avec Molecule">
+<meta name="twitter:description" content="Molecule n’est pas à proprement parlé un framework de test, c’est un outil pour orchester et organiser des scénari de test(s). Il a été conçu pour faciliter l’écriture de test et améliorer la qualité">
+  
+    <link rel="alternate" href="/atom.xml" title="Log d&#39;un sysAdmin" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Log d&#39;un sysAdmin</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://l00ptr.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Tester-du-code-ansible-avec-Molecule" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/05/24/Tester-du-code-ansible-avec-Molecule/" class="article-date">
+  <time datetime="2019-05-24T21:09:30.000Z" itemprop="datePublished">2019-05-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Tester du code ansible avec Molecule
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Molecule n’est pas à proprement parlé un framework de test, c’est un outil pour orchester et organiser des scénari de test(s). Il a été conçu pour faciliter l’écriture de test et améliorer la qualité des rôles ansible. Il utilise (par défaut) les briques suivantes :</p>
+<ul>
+<li><a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a> pour construire rapidement des plateformes (distrib GNU+Linux) pour lancer nos tests</li>
+<li><a href="htts://www.ansible.com" target="_blank" rel="noopener">Ansible</a> pour orchestrer la création d’un ou plusieurs hosts pour éxecuter nos tests</li>
+<li><a href="https://testinfra.readthedocs.io/en/latest/" target="_blank" rel="noopener">Testinfra</a> pour tester les composants d’infra que nous configurons avec notre/nos rôles (par exemple vérifier que le port 80 écoute bien après avoir installé, activé et lancé httpd via un rôle ansible)</li>
+</ul>
+<p>L’objectif de notre article est de prendre en main molecule et de voir comment lancer des tests (via testinfra). En + de l’article, <a href="https://github.com/l00ptr/molecue_demo" target="_blank" rel="noopener">vous pouvez trouver un repo git qui reprend l’exemple que nous élaborons ici</a>.<br><a id="more"></a></p>
+<h2 id="Installation-de-molecule"><a href="#Installation-de-molecule" class="headerlink" title="Installation de molecule"></a>Installation de molecule</h2><p>Pour ne pas polluer mon système j’ai pris l’habitude de travailler dans un virtualenv python. Pour configurer un environnement virtuel nous devons installer le package qui va bien sur notre système (python3-virtualenv sous fedora 29 et virtualenv sous debian 9).</p>
+<p>Après avoir installé le bon package nous pouvons créer un notre environnement (nommé ici de façon très original venv) dans notre repertoire de travail :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ virtualenv venv</span><br></pre></td></tr></table></figure></p>
+<p>Pour l’utiliser/activer nous devons “sourcer/charger” le fichier activate (qui va modifier plusieurs variables params - par exemple notre path).<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ source venv/bin/activate</span><br></pre></td></tr></table></figure></p>
+<p>On peut maintenant installer les modules python pour utiliser molecule avec docker sur des systèmes qui utilisent SELinux :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ pip install molecule</span><br><span class="line">$ pip install &apos;molecule[docker]&apos;</span><br><span class="line">$ pip install selinux</span><br></pre></td></tr></table></figure></p>
+<p>Il est possible de vérifier la version des modules que nous venons d’installer via pip freeze ou list. </p>
+<p>Perso j’aime bien la méthode freeze pour pouvoir rediriger le résultat vers un fichier requirements.txt (pratique pour reconstruire/reproduire notre virtualenv + tard).<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ pip freeze | tee requirements.txt</span><br><span class="line">...</span><br><span class="line">ansible==2.8.0</span><br><span class="line">ansible-lint==4.1.0</span><br><span class="line">...</span><br><span class="line">molecule==2.20.1</span><br><span class="line">...</span><br><span class="line">testinfra==1.19.0</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<p>Notre répertoire ressemble à ceci :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ls -alGn</span><br><span class="line">-rw-rw-r--.  1 1000  914 May 19 20:23 requirements.txt</span><br><span class="line">drwxrwxr-x.  6 1000 4096 May 19 20:12 venv</span><br></pre></td></tr></table></figure></p>
+<p>Et nous avons dans notre path le script molecule (notre path a été modifié car nous avons activé le virtualenv) :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ which molecule</span><br><span class="line">~/demo_molecule/venv/bin/molecule</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ molecule --version</span><br><span class="line">molecule, version 2.20.1</span><br></pre></td></tr></table></figure>
+<h2 id="Initialisation-d’un-role-avec-molecule-et-tour-du-proprio"><a href="#Initialisation-d’un-role-avec-molecule-et-tour-du-proprio" class="headerlink" title="Initialisation d’un rôle avec molecule et tour du proprio"></a>Initialisation d’un rôle avec molecule et tour du proprio</h2><h3 id="Init-du-role"><a href="#Init-du-role" class="headerlink" title="Init du rôle"></a>Init du rôle</h3><p>Maintenant que nous avons installé nos modules, nous pouvons créer un rôle directement avec molecule. L’avantage d’utiliser cette technique pour initialiser un rôle est qu’elle permet de créer une structure pré-remplie pour nos tests :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">molecule init role -r piweb.demo-molecule</span><br></pre></td></tr></table></figure></p>
+<h3 id="Tour-du-prorpio"><a href="#Tour-du-prorpio" class="headerlink" title="Tour du prorpio"></a>Tour du prorpio</h3><p>On doit retrouver dans notre répertoire le rôle <em>piweb.demo-molecule</em> :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">drwxrwxr-x.  8 1000 4096 May 19 21:14 piweb.demo-molecule</span><br><span class="line">-rw-rw-r--.  1 1000  914 May 19 20:23 requirements.txt</span><br><span class="line">drwxrwxr-x.  6 1000 4096 May 19 20:12 venv</span><br></pre></td></tr></table></figure></p>
+<p>Qui lui même contient les fichiers :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ cd piweb.demo-molecule</span><br><span class="line">$ ls -alGn</span><br><span class="line">drwxrwxr-x. 2 1000 4096 May 19 21:14 defaults</span><br><span class="line">drwxrwxr-x. 2 1000 4096 May 19 21:14 handlers</span><br><span class="line">drwxrwxr-x. 2 1000 4096 May 19 21:14 meta</span><br><span class="line">drwxrwxr-x. 3 1000 4096 May 19 21:14 molecule</span><br><span class="line">-rw-rw-r--. 1 1000 1330 May 19 21:14 README.md</span><br><span class="line">drwxrwxr-x. 2 1000 4096 May 19 21:14 tasks</span><br><span class="line">drwxrwxr-x. 2 1000 4096 May 19 21:14 vars</span><br><span class="line">-rw-rw-r--. 1 1000  172 May 19 21:14 .yamllint</span><br></pre></td></tr></table></figure></p>
+<p>En + de la structure classique d’un rôle ansible, on retrouve :</p>
+<ul>
+<li><strong>Un répertoire molecule</strong> (qui va contenir nos tests)</li>
+<li>Et <strong>un fichier caché .yamllint</strong> (qui décrit comment doit se compoter le linter yaml).</li>
+</ul>
+<h4 id="Structure-du-repertoire-molecule"><a href="#Structure-du-repertoire-molecule" class="headerlink" title="Structure du répertoire molecule"></a>Structure du répertoire molecule</h4><p>Molecule permet de manipuler plusieurs scénari pour nos tests, L’init du rôle (voir + haut) va instancier un seul scénario “default” qui est préconfiguré pour utiliser docker.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cd piweb.demo-molecule/molecule</span><br><span class="line">$ ls -alGn</span><br><span class="line">drwxrwxr-x. 3 1000 4096 May 19 21:14 default</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ cd default</span><br><span class="line">$ ls -alGn</span><br><span class="line">-rw-rw-r--. 1 1000  961 May 19 21:14 Dockerfile.j2</span><br><span class="line">-rw-rw-r--. 1 1000  555 May 19 21:14 INSTALL.rst</span><br><span class="line">-rw-rw-r--. 1 1000  240 May 19 21:14 molecule.yml</span><br><span class="line">-rw-rw-r--. 1 1000   75 May 19 21:14 playbook.yml</span><br><span class="line">drwxrwxr-x. 3 1000 4096 May 19 21:14 tests</span><br></pre></td></tr></table></figure>
+<p>Les fichiers servent à :</p>
+<ul>
+<li>Dockerfile.j2 Dockerfile template(jinja2) utilisé pour construire les images Docker pour nos tests.</li>
+<li>INSTALL.rst contient des instructions complémentaires sur comment utiliser le scénario.</li>
+<li>molecule.yml, nous permet de configurer molecule, dans notre exemple on précise les informations suivantes :<ul>
+<li>Ou trouver les dépendances si il y en a (galaxy)</li>
+<li>Le driver utilisé (Docker dans notre cas)</li>
+<li>Le linter (Outil pour vérifier le formatage et le respect des bonnes pratiques de notre code)</li>
+<li>La ou les plateformes (exemple distrib linux) pour réaliser nos tests</li>
+<li>Le provisioner (L’outil utilisé garnir nos plateformes - ansible ici)</li>
+<li>Le ou les verifiers (Notre ou nos frameworks pour les tests)</li>
+</ul>
+</li>
+<li>playbook.yml il est utilisé par molecule pour tester le rôle</li>
+<li>tests C’est le répertoire qui va contenir nos tests (testinfra par défaut, mais il est possible d’utiliser d’autres outils pour les tests).</li>
+</ul>
+<h2 id="Premier-test…-1-2-3-go"><a href="#Premier-test…-1-2-3-go" class="headerlink" title="Premier test… 1, 2, 3 go"></a>Premier test… 1, 2, 3 go</h2><p>Maintenant que nous avons + d’info concernant la structure de notre projet. Et que nous comprenons un peu + le fonctionnement de molecule, il est temps de lancer nos tests pour la permière fois :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ molecule test</span><br></pre></td></tr></table></figure></p>
+<h3 id="Lint-erreur-Les-meta-donnes-sont-invalides"><a href="#Lint-erreur-Les-meta-donnes-sont-invalides" class="headerlink" title="Lint erreur - Les meta-donnes sont invalides"></a>Lint erreur - Les meta-donnes sont invalides</h3><p>Lors de notre premier test nous rencontrons un petit problème, le linter (outil de vérification du formatage) nous remonte des erreurs dans le fichier meta/main.yml :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/home/xxx/piweb.demo-molecule/meta/main.yml:1</span><br><span class="line">    &#123;&apos;meta/main.yml&apos;: &#123;&apos;galaxy_info&apos;: &#123;&apos;author&apos;: &apos;your name&apos;, &apos;description&apos;: &apos;your description&apos;, &apos;company&apos;: &apos;your company (optional)&apos;, &apos;license&apos;: &apos;license (GPLv2, CC-BY, etc)&apos;, &apos;min_ansible_version&apos;: 1.2, &apos;galaxy_tags&apos;: [], &apos;__line__&apos;: 2, &apos;__file__&apos;: &apos;/home/xxx/piweb.demo-molecule/meta/main.yml&apos;&#125;, &apos;dependencies&apos;: [], &apos;__line__&apos;: 1, &apos;__file__&apos;: &apos;/home/xxx/piweb.demo-molecule/meta/main.yml&apos;&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>Le fichier meta/main.yml apparait comme invalide car un des objectifs de molecule est de pousser au respect des bonnes pratiques. Il est recommandé de documenter notre rôle. Pour continuer il est donc requis de compléter ce fichier avec des données valides. </p>
+<p>Après modification du fichier, nos tests doivent se dérouler correctement et être totalement au vert. On peut le vérifier en relançant les tests :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ molecule test</span><br></pre></td></tr></table></figure></p>
+<p>Notre scénario se termine en affichant le message suivant qui indique que nos tests sont ok :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tests/test_default.py .                                                  [100%]</span><br><span class="line">=========================== 1 passed in 2.80 seconds ===========================</span><br><span class="line">Verifier completed successfully.</span><br></pre></td></tr></table></figure></p>
+<h3 id="Role-pour-jouer-tester"><a href="#Role-pour-jouer-tester" class="headerlink" title="Rôle pour jouer - tester :-)"></a>Rôle pour jouer - tester :-)</h3><p>Maintenant que notre config de base est fonctionnel, il est temps d’écrire notre rôle et quelques tests.</p>
+<h4 id="Ecriture-du-role"><a href="#Ecriture-du-role" class="headerlink" title="Ecriture du rôle"></a>Ecriture du rôle</h4><p>Nous allons écrire un rôle ultra simple pour enfin pouvoir écrire et exécuter quelques tests avec testinfra. </p>
+<p>Notre rôle va :</p>
+<ul>
+<li>Installer httpd</li>
+<li>L’activer (faire en sorte que le service se lance au démarrage de notre serveur)</li>
+<li>Et démarrer le service httpd</li>
+</ul>
+<p>On va simplement ajouter dans le fichier tasks/main.yml, les tâches :<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- name: Install httpd</span><br><span class="line">  yum:</span><br><span class="line">    name: httpd</span><br><span class="line">    state: installed</span><br><span class="line">- name: Enable and start httpd</span><br><span class="line">  service:</span><br><span class="line">    state: started</span><br><span class="line">    enabled: yes</span><br></pre></td></tr></table></figure></p>
+<p>Nous avons du ajouter la configuration suivante dans notre fichier molecule.yml sous la <a href="https://molecule.readthedocs.io/en/latest/examples.html#systemd-container" target="_blank" rel="noopener">“platform” CentOS pour que systemd/systemctl</a> fonctionne correctement. Autrement la tâche “Enable and start httpd” échoue.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">command: /sbin/init</span><br><span class="line">tmpfs:</span><br><span class="line">  - /run</span><br><span class="line">  - /tmp</span><br><span class="line">volumes:</span><br><span class="line">  - /sys/fs/cgroup:/sys/fs/cgroup:ro</span><br></pre></td></tr></table></figure></p>
+<h3 id="Ecriture-des-tests-la-partie-fun…-enfin"><a href="#Ecriture-des-tests-la-partie-fun…-enfin" class="headerlink" title="Ecriture des tests la partie fun… enfin"></a>Ecriture des tests la partie fun… enfin</h3><p>On peut ajouter des tests pour vérifier que notre rôle fait bien les opérations demandées. Il faut modifier le fichier molecule/default/test/test_infra.py pour par exemple ajouter des tests :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/venv python3</span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line">import testinfra.utils.ansible_runner</span><br><span class="line"></span><br><span class="line">testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(</span><br><span class="line">    os.environ[&apos;MOLECULE_INVENTORY_FILE&apos;]).get_hosts(&apos;all&apos;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def test_httpd_is_installed(host):</span><br><span class="line">    pkg = host.package(&apos;httpd&apos;)</span><br><span class="line">    assert pkg.is_installed</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def test_httpd_running_and_enabled(host):</span><br><span class="line">    httpd = host.service(&quot;httpd&quot;)</span><br><span class="line">    assert httpd.is_running</span><br><span class="line">    assert httpd.is_enabled</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def test_port_80_listening(host):</span><br><span class="line">    port_80 = host.socket(&quot;tcp://0.0.0.0:80&quot;)</span><br><span class="line">    assert port_80.is_listening</span><br></pre></td></tr></table></figure>
+<p>Ces trois tests permettent de vérifier :</p>
+<ul>
+<li>Que le package httpd est bien installé</li>
+<li>Que le service httpd apache est bien lancé et activé</li>
+<li>Qu’il y a bien un service qui écoute sur le port TCP 80 pour 0.0.0.0</li>
+</ul>
+<p>On (re)-lance notre commande pour jouer nos nouveaux tests :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ molecule test</span><br></pre></td></tr></table></figure></p>
+<p>Qui va dérouler l’ensemble de notre scénario et afficher le résultat suivant si tout va bien :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">--&gt; Validating schema /home/xxx/piweb.demo-molecule/molecule/default/molecule.yml.</span><br><span class="line">Validation completed successfully.</span><br><span class="line">--&gt; Test matrix</span><br><span class="line">....</span><br><span class="line">└── default</span><br><span class="line">    ├── lint</span><br><span class="line">    ├── cleanup</span><br><span class="line">    ├── destroy</span><br><span class="line">    ├── dependency</span><br><span class="line">    ├── syntax</span><br><span class="line">    ├── create</span><br><span class="line">    ├── prepare</span><br><span class="line">    ├── converge</span><br><span class="line">    ├── idempotence</span><br><span class="line">    ├── side_effect</span><br><span class="line">    ├── verify</span><br><span class="line">    ├── cleanup</span><br><span class="line">    └── destroy</span><br><span class="line">....</span><br><span class="line">--&gt; Scenario: &apos;default&apos;</span><br><span class="line">--&gt; Action: &apos;idempotence&apos;</span><br><span class="line">Idempotence completed successfully.</span><br><span class="line">--&gt; Scenario: &apos;default&apos;</span><br><span class="line">--&gt; Action: &apos;side_effect&apos;</span><br><span class="line">Skipping, side effect playbook not configured.</span><br><span class="line">....</span><br><span class="line">--&gt; Scenario: &apos;default&apos;</span><br><span class="line">--&gt; Action: &apos;verify&apos;</span><br><span class="line">--&gt; Executing Testinfra tests found in /home/xxx/piweb.demo-molecule/molecule/default/tests/...</span><br><span class="line">    ============================= test session starts ==============================</span><br><span class="line">    platform linux -- Python 3.7.3, pytest-4.5.0, py-1.8.0, pluggy-0.11.0</span><br><span class="line">    rootdir: /home/xxx, inifile: pytest.ini</span><br><span class="line">    collected 3 items</span><br><span class="line">    tests/test_default.py ...                                                [100%]</span><br><span class="line">    </span><br><span class="line">    =========================== 3 passed in 4.75 seconds ===========================</span><br><span class="line">    Verifier completed successfully.</span><br></pre></td></tr></table></figure></p>
+<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>Nous faissons ici un usage très basique de Molecule + testinfra. Il est possible avec les deux outils de construire des scénari + complexes, je vous invite vivement à lire la documentation des deux projets pour obtenir + d’info (par ici : <a href="https://molecule.readthedocs.io/en/stable/" target="_blank" rel="noopener">molecule</a> et <a href="https://testinfra.readthedocs.io/en/latest/" target="_blank" rel="noopener">testinfra</a>) - On trouve même dans la doc comment jouer avec du CI (avec travis, gitlab-ci et jenkins). </p>
+<p>Ces deux outils permettent de réduire les risques de dysfonctionnement qui peuvent se produire quand on utilise Ansible. Ils sont et vont devenir pour moi indispensables pour automatiser des process de provisioning simple ou complexe…  Mais aussi quand on travaille en collaboration sur des rôles.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://l00ptr.github.io/2019/05/24/Tester-du-code-ansible-avec-Molecule/" data-id="cjvvdg7xg000041pvekox92yw" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ansible/">Ansible</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/automatisation/">automatisation</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/molecule/">molecule</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sysAdmin/">sysAdmin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/testinfra/">testinfra</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/05/12/Mise-en-place-de-monitoring-Postgres-avec-Zabbix/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">Mise en place de monitoring Postgres avec Zabbix</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ansible/">Ansible</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Monitoring/">Monitoring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Veille-tech/">Veille tech</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Zabbix/">Zabbix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/automatisation/">automatisation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/formation/">formation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/molecule/">molecule</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sysAdmin/">sysAdmin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/testinfra/">testinfra</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Ansible/" style="font-size: 10px;">Ansible</a> <a href="/tags/Monitoring/" style="font-size: 10px;">Monitoring</a> <a href="/tags/PostgreSQL/" style="font-size: 10px;">PostgreSQL</a> <a href="/tags/Veille-tech/" style="font-size: 10px;">Veille tech</a> <a href="/tags/Zabbix/" style="font-size: 10px;">Zabbix</a> <a href="/tags/automatisation/" style="font-size: 10px;">automatisation</a> <a href="/tags/formation/" style="font-size: 10px;">formation</a> <a href="/tags/molecule/" style="font-size: 10px;">molecule</a> <a href="/tags/sysAdmin/" style="font-size: 20px;">sysAdmin</a> <a href="/tags/testinfra/" style="font-size: 10px;">testinfra</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">mai 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/05/24/Tester-du-code-ansible-avec-Molecule/">Tester du code ansible avec Molecule</a>
+          </li>
+        
+          <li>
+            <a href="/2019/05/12/Mise-en-place-de-monitoring-Postgres-avec-Zabbix/">Mise en place de monitoring Postgres avec Zabbix</a>
+          </li>
+        
+          <li>
+            <a href="/2019/05/09/Comment-je-fais-de-la-veille-en-2019/">Comment je fais de la veille en 2019</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Julian<br>
+      Propulsé par <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
